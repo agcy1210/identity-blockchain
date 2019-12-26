@@ -1,0 +1,27 @@
+blockchain: It is a distributed and decentralized ledger that stores data such as 
+            transactions and that is publicly shared across all nodes of its network.
+
+ledger: It is type of register or say a record keeping book which stores all
+        the transactions of the organization.
+        Everyone has the copy of ledger who are in chain.(Distributed)
+
+wallets: It gives blockchain additional security through digital signature
+
+Mining: Miners do the work of adding transactions to the blockchain
+
+Bitcoin: First decentralized cryptocurrency
+        
+Block: 1) It should atleast consists of timestamp in millisecconds.
+       2) lastHash - the hash of block before it
+       3) hash - based on its own data
+       4) The data to store
+
+Genesis Block: It is the starting block to start the blockchain.
+               It contains dummy data for all the block parameters.
+
+SHA-256: It is called Secure Hash Algorithm which produces 256bit hash value
+
+transactions : 
+1) input field -> info about sender
+2) output field -> how much currency sender is giving to another wallet
+3) unique id -> makes them unique and can be used to find them among many
