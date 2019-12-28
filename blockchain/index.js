@@ -70,12 +70,14 @@ class Blockchain {
         } else if(data.id === newData[updateCardIndex].data.id) {
             let updationKeys = Object.keys(data.dataUpdation);
             for(let i=0;i<updationKeys.length;i++) {
-                newData[updateCardIndex].data[updationKeys[i]] = data.dataUpdation[updationKeys[i]];
+                if(updationKeys[i] !== "id") {
+                    newData[updateCardIndex].data[updationKeys[i]] = data.dataUpdation[updationKeys[i]];
+                }
             }
 
             return this.addBlock(newData);
         } else {
-            return false;
+            return `${data.type.toUpperCase()} id doesn't match!`;
         }
     }
 
@@ -89,8 +91,6 @@ class Blockchain {
         } else {
             return "Block not found";
         }
-
-        
     }
 }
 
