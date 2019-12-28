@@ -5,8 +5,9 @@ const P2pServer = require('./p2p-server');
 const fs = require('fs');
 const { BACKUP_PATH, BACKUP_DIR } = require('../config');
 const ChainUtil = require('../chain-util');
+const axios = require('axios');
 
-const HTTP_PORT = process.env.HTTP_PORT || 3001; 
+const HTTP_PORT = process.env.HTTP_PORT || 3001;
 
 const app = express();
 const bc = new Blockchain();
@@ -18,9 +19,9 @@ app.use(bodyParser.json());
 
 //removeBackupFile();
 
-if (!fs.existsSync(BACKUP_DIR)){
+if (!fs.existsSync(BACKUP_DIR)) {
 	console.log("Creating Backup folder... created!");
-    fs.mkdirSync(BACKUP_DIR);
+	fs.mkdirSync(BACKUP_DIR);
 }
 
 try {
@@ -32,7 +33,7 @@ try {
 	} else {
 		ChainUtil.backupBlockchain(bc.chain);
 	}
-} catch(err) {
+} catch (err) {
 	console.error(err);
 }
 
@@ -42,26 +43,43 @@ async function removeBackupFile() {
 
 
 //it shows all the blocks in the blockchain
-app.get('/api/blocks', (req, res)=> {
-    res.json(bc.chain);
+app.get('/api/blocks', (req, res) => {
+	res.json(bc.chain);
+});
+
+app.get('/api/block/:publicKey', (req, res) => {
+	const userBlock = bc.chain.filter((block) => {
+		return block.publicKey === req.params.publicKey;
+	})[0];
+
+	res.json({
+		data: userBlock.data
+	});
 });
 
 //used to add a new block in the chain
-app.post('/api/mine', (req, res) => {
-    const block = bc.addBlock(req.body.data);
-    console.log(`New block added: ${block.toString()}`);
+app.post('/api/mine', async (req, res) => {
+	const block = bc.addBlock(req.body.data);
+	console.log(`New block added: ${block.toString()}`);
 
-    p2pServer.syncChains();
+	p2pServer.syncChains();
+	//const userId = req.body.userId;
+	await axios.post('http://localhost:4000/api/update/publicKey', {
+		userId: req.body.userId,
+		publicKey: block.publicKey
+	})
+		.then((el) => console.log("success"))
+		.catch((e) => console.log(e));
 
-    res.redirect('/api/blocks');
+	res.redirect('/api/blocks');
 });
 
-app.post('/api/update', (req,res) => {
-    res.json({ message: bc.update(req.body.publicKey, req.body.update) });
+app.post('/api/update', (req, res) => {
+	res.json({ message: bc.update(req.body.publicKey, req.body.update) });
 });
 
-app.post('/api/verify', (req,res) => {
-    res.json({ message: bc.verifyDetails(req.body.publicKey, req.body.data) });
+app.post('/api/verify', (req, res) => {
+	res.json({ message: bc.verifyDetails(req.body.publicKey, req.body.data) });
 });
 
 
