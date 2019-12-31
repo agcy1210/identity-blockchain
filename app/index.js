@@ -58,13 +58,13 @@ app.post('/api/mine', async (req, res) => {
 	console.log(`New block added: ${block.toString()}`);
 
 	p2pServer.syncChains();
-	//const userId = req.body.userId;
+
 	await axios.post('http://localhost:4000/api/update/publicKey', {
 		userId: req.body.userId,
 		publicKey: block.publicKey
 	})
-		.then((el) => console.log("success"))
-		.catch((e) => console.log(e));
+	.then((el) => console.log("success"))
+	.catch((e) => console.log(e));
 
 	res.redirect('/api/blocks');
 });
@@ -74,6 +74,13 @@ app.post('/api/update', (req,res) => {
 
 	p2pServer.syncChains();
     
+	await axios.post('http://localhost:4000/api/update/publicKey', {
+		userId: req.body.userId,
+		publicKey: block.publicKey
+	})
+	.then((el) => console.log("success"))
+	.catch((e) => console.log(e));
+
     res.json({ message: block });
 
 });
