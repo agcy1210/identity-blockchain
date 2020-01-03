@@ -89,6 +89,10 @@ app.post('/api/verify', (req, res) => {
 	res.json({ message: bc.verifyDetails(req.body.publicKey, req.body.data) });
 });
 
+app.post('/api/peers/add', (req, res) => {
+	const message = p2pServer.addPeers(req.body.peers);
+	res.json({ message });
+});
 
 app.listen(HTTP_PORT, () => console.log(`Listening on port ${HTTP_PORT}`));
 
