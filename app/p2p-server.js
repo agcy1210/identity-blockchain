@@ -18,20 +18,23 @@ class P2pServer {
         //this can listen to incoming messages to the web socket server
         server.on('connection', socket => this.connectSocket(socket));
 
-        this.connectToPeers();
+        this.connectToPeers(peers);
 
         console.log(`Listening for peer to peer connections on : ${P2P_PORT}`);
     }
 
-    connectToPeers() {
-        peers.forEach(peer => {
-            // ws://localhost:5001
+    connectToPeers(peers_array) {
+        peers_array.forEach(peer => {
             const socket = new Websocket(peer);
 
             socket.on('open', () => this.connectSocket(socket));
         })
     }
 
+    addPeers(peers) {
+        const peers_array = peers.split(",").map(peer => peer.trim());
+        this.connectToPeers(peers_array);
+    }
 
     //this function pushes the socket in the array of sockets
     connectSocket(socket) {
