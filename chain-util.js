@@ -3,7 +3,7 @@ const SHA256 = require('crypto-js/sha256');
 const uuidV1 = require('uuid/v1');
 const ec = new EC('secp256k1');
 const fs = require('fs');
-const { BACKUP_PATH} = require('./config');
+const { BACKUP_PATH } = require('./config');
 
 class ChainUtil {
     static genKeyPair() {
@@ -33,6 +33,11 @@ class ChainUtil {
         }); 
         console.log("Backup succesfull!");
     }
+
+    static removeBackupFile() {
+        fs.unlinkSync(BACKUP_PATH);
+    }
+
 }
 
 module.exports = ChainUtil;
