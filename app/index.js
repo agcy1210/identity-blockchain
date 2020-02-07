@@ -69,7 +69,8 @@ app.post('/api/mine', async (req, res) => {
 	res.redirect('/api/blocks');
 });
 
-app.post('/api/update', (req, res) => {
+
+app.post('/api/update', async (req,res) => {
 	const block = bc.update(req.body.publicKey, req.body.update);
 
 	p2pServer.syncChains();
