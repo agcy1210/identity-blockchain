@@ -7,7 +7,7 @@ const { BACKUP_PATH, BACKUP_DIR } = require('../config');
 const ChainUtil = require('../chain-util');
 const axios = require('axios');
 
-const HTTP_PORT = process.env.HTTP_PORT || 3001;
+const HTTP_PORT = process.env.HTTP_PORT || 3002;
 
 const app = express();
 const bc = new Blockchain();
@@ -18,7 +18,7 @@ const p2pServer = new P2pServer(bc);
 app.use(bodyParser.json());
 
 //ChainUtil.removeBackupFile();
-
+//backup file for storing chain
 if (!fs.existsSync(BACKUP_DIR)) {
 	console.log("Creating Backup folder... created!");
 	fs.mkdirSync(BACKUP_DIR);

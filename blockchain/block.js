@@ -31,6 +31,7 @@ class Block {
         const lastHash = lastBlock.hash;
         let keyPair = ChainUtil.genKeyPair();
 
+        //generates public key for the block
         let publicKey = keyPair.getPublic('hex')
 
         timestamp = Date.now();
@@ -55,7 +56,7 @@ class Block {
     }
 
     static verify(pubKey, data, block) {
-        let idData = block.data.filter(el => el.type === data.type)[0].data.id;
+        let idData = block.data.filter(el => el.type === data.type)[0].data.id; //gives the id number of the id
         let dataHash = block.hash;
         let digitalSignature = block.signature;
 
