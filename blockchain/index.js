@@ -52,14 +52,6 @@ class Blockchain {
     }
 
     addBlockUpdate(data, authId) {
-        var chain_ids = [];
-
-        for(var i=1;i<this.chain.length;i++){
-            this.chain[i].data.forEach(el => {
-                chain_ids.push(el.id);
-            });
-        }
-
         // as chain is a list we can get the last block by index one less than current
         const lastBlock = this.chain[this.chain.length - 1];
         const block = Block.mineBlock(lastBlock, data, authId);
@@ -104,6 +96,19 @@ class Blockchain {
         this.chain = newChain;
     }
 
+    // {
+    //     "authId": "123434",
+    //     "referenceNo":"yhNn4lijzQ",
+    //     "update": {
+    //            "type": "Aadhar",
+    //            "dataUpdation": {
+    //                "name": "Aman Chaudhary",
+    //                "phone":"22334443",
+    //                "email":"xyz@gmail.com"
+    //            }
+    //         }
+    // }
+
     update(data, authId, referenceNo) {
         const chain = this.chain;
         const type = data['type'];
@@ -115,26 +120,34 @@ class Blockchain {
 
         const recentBlock = blocks[blocks.length - 1];
         const blockData = JSON.parse(JSON.stringify(recentBlock.data));
-
         var idData = (blockData.filter(el => el.type==type))[0];
 
+        //changed details of the id with the new 
         var newData = [{
             type: idData['type'],
             id: idData['id'],
             ...data.dataUpdation 
         }];
-        console.log(newData);
+
+        //ids which are not changed are added as it is
+        recentBlock.data.forEach(el => {
+            if(el.type !== type){
+                newData.push(el);
+            }
+        });
 
         return this.addBlockUpdate(newData, authId);
     }
 
-    verifyDetails(pubKey, data) {
+    verifyDetails(data) {
         let block = this.chain.filter(block => {
-            return block.publicKey === pubKey;
+            return block.referenceNo === data.referenceNo;
         })[0];
 
+        let id = data.id;
+
         if(block){
-            return Block.verify(pubKey, data, block);
+            return Block.verify(block.publicKey, data, block);
         } else {
             return "Block not found";
         }

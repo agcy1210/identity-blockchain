@@ -62,11 +62,11 @@ class Block {
     }
 
     static verify(pubKey, data, block) {
-        let idData = block.data.filter(el => el.id === data.id)[0]; //gives the id number of the id
+        let idData = block.data.filter(el => el.type === data.type)[0]; //gives the block with given type
         let dataHash = block.hash;
         let digitalSignature = block.signature;
 
-        if ((ChainUtil.verifySignature(pubKey, digitalSignature, dataHash)) && (Block.idHash(idData) === Block.idHash(data.id))) {
+        if ((ChainUtil.verifySignature(pubKey, digitalSignature, dataHash)) && (Block.idHash(idData.id) === Block.idHash(data.id))) {
             return "Match";
         } else {
             return "No Match";

@@ -51,7 +51,7 @@ app.get('/api/block/:referenceNo', (req, res) => {
 	});
 });
 
-app.get('/api/block/basic/:referenceNo', (req, res) => {
+app.post('/api/block/basic/:referenceNo', (req, res) => {
 	const userBlock = bc.chain.filter((block) => {
 		return block.referenceNo === req.params.referenceNo;
 	})[0];
@@ -106,7 +106,7 @@ app.post('/api/update', async (req,res) => {
 });
 
 app.post('/api/verify', (req, res) => {
-	res.json({ message: bc.verifyDetails(req.body.publicKey, req.body.data) });
+	res.json({ message: bc.verifyDetails(req.body.data) });
 });
 
 app.post('/api/peers/add', (req, res) => {
