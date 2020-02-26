@@ -7,10 +7,62 @@ class Blockchain {
         this.chain = [Block.genesis()];
     }
 
-    addBlock(data) {
+    // {
+    //     "authId": "123434",
+    //     "data": [
+    //         {
+    //             "type":"Aadhar",
+    //             "id":"232"
+    //         },
+    //         {
+    //             "type":"Pan",
+    //             "id":"4545"
+    //         }
+        
+    //     ]
+    // }
+    addBlock(data, authId) {
+        var chain_ids = [];
+        console.log(authId);
+        for(var i=1;i<this.chain.length;i++){
+            this.chain[i].data.forEach(el => {
+                chain_ids.push(el.id);
+            });
+        }
+        var flag = 0;
+        for(var i=0;i<chain_ids.length;i++){
+            data.forEach(el => {
+                if(el.id == chain_ids[i]){
+                    flag = 1;
+                }
+            });
+        }
+        if(flag==1){
+            return 'Block already exists';
+        }
+
         // as chain is a list we can get the last block by index one less than current
         const lastBlock = this.chain[this.chain.length - 1];
-        const block = Block.mineBlock(lastBlock, data);
+        const block = Block.mineBlock(lastBlock, data, authId);
+        this.chain.push(block);
+
+        ChainUtil.backupBlockchain(this.chain);        
+
+        return block;
+    }
+
+    addBlockUpdate(data, authId) {
+        var chain_ids = [];
+
+        for(var i=1;i<this.chain.length;i++){
+            this.chain[i].data.forEach(el => {
+                chain_ids.push(el.id);
+            });
+        }
+
+        // as chain is a list we can get the last block by index one less than current
+        const lastBlock = this.chain[this.chain.length - 1];
+        const block = Block.mineBlock(lastBlock, data, authId);
         this.chain.push(block);
 
         ChainUtil.backupBlockchain(this.chain);        
@@ -52,33 +104,28 @@ class Blockchain {
         this.chain = newChain;
     }
 
-    update(publicKey, data) {
+    update(data, authId, referenceNo) {
         const chain = this.chain;
+        const type = data['type'];
 
-        let blocks = chain.filter(block => {
-            return block.publicKey === publicKey;
-        });
+        let blocks = chain.filter(el => el.referenceNo==referenceNo);
+        if(blocks.length==0){
+            return 'Block not found';
+        }
 
         const recentBlock = blocks[blocks.length - 1];
-        const newData = JSON.parse(JSON.stringify(recentBlock.data));
-        const updateCardIndex = newData.findIndex((el) => {
-            return el.type === data.type;
-        });
+        const blockData = JSON.parse(JSON.stringify(recentBlock.data));
 
-        if(updateCardIndex === -1) {
-            return "Card not found!";
-        } else if(data.id === newData[updateCardIndex].data.id) {
-            let updationKeys = Object.keys(data.dataUpdation);
-            for(let i=0;i<updationKeys.length;i++) {
-                if(updationKeys[i] !== "id") {
-                    newData[updateCardIndex].data[updationKeys[i]] = data.dataUpdation[updationKeys[i]];
-                }
-            }
+        var idData = (blockData.filter(el => el.type==type))[0];
 
-            return this.addBlock(newData);
-        } else {
-            return `${data.type.toUpperCase()} id doesn't match!`;
-        }
+        var newData = [{
+            type: idData['type'],
+            id: idData['id'],
+            ...data.dataUpdation 
+        }];
+        console.log(newData);
+
+        return this.addBlockUpdate(newData, authId);
     }
 
     verifyDetails(pubKey, data) {

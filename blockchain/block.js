@@ -2,13 +2,15 @@ const ChainUtil = require('../chain-util');
 const { DIFFICULTY, MINE_RATE } = require('../config');
 
 class Block {
-    constructor(timestamp, lastHash, hash, data, publicKey, signature) {
+    constructor(timestamp, lastHash, hash, data, publicKey, signature, referenceNo, authId) {
         this.timestamp = timestamp;
         this.lastHash = lastHash;
         this.hash = hash;
         this.data = data;
         this.publicKey = publicKey;
         this.signature = signature;
+        this.referenceNo = referenceNo;
+        this.authId = authId;
     }
 
     toString() {
@@ -18,16 +20,20 @@ class Block {
             Hash       : ${this.hash.substring(0, 10)}
             Data       : ${this.data}
             publicKey  : ${this.publicKey.toString()}
-            signature  : ${this.signature}`;
+            signature  : ${this.signature}
+            referenceNo: ${this.referenceNo}
+            authId     : ${this.authId}`;
     }
 
     //used to initialize the chain. This will always be the first block of the chain
     static genesis() {
-        return new this('Genesis time', '----', 'fir57-h45h', [], 'x', 'sign');
+        return new this('Genesis time', '----', 'fir57-h45h', [], 'x', 'sign','r1','a1');
     }
 
-    static mineBlock(lastBlock, data) {
+    static mineBlock(lastBlock, data, authId) {
         let hash, timestamp;
+        
+        const referenceNo = this.generateReferenceNo(10);
         const lastHash = lastBlock.hash;
         let keyPair = ChainUtil.genKeyPair();
 
@@ -39,7 +45,7 @@ class Block {
         hash = Block.hash(lastHash, data, publicKey);
         let signature = keyPair.sign(hash);
 
-        return new this(timestamp, lastHash, hash, data, publicKey, signature);
+        return new this(timestamp, lastHash, hash, data, publicKey, signature, referenceNo, authId);
     }
 
     //generates the hash using the SHA-256 algorithm
@@ -56,7 +62,7 @@ class Block {
     }
 
     static verify(pubKey, data, block) {
-        let idData = block.data.filter(el => el.type === data.type)[0].data.id; //gives the id number of the id
+        let idData = block.data.filter(el => el.id === data.id)[0]; //gives the id number of the id
         let dataHash = block.hash;
         let digitalSignature = block.signature;
 
@@ -70,6 +76,18 @@ class Block {
     static blockHash(block) {
         const { lastHash, data, publicKey } = block;
         return Block.hash(lastHash, data, publicKey);
+    }
+
+    static generateReferenceNo(keyLength) {
+        var i, key = "", characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    
+        var charactersLength = characters.length;
+    
+        for (i = 0; i < keyLength; i++) {
+            key += characters.substr(Math.floor((Math.random() * charactersLength) + 1), 1);
+        }
+    
+        return key;
     }
 
 }
