@@ -76,12 +76,12 @@ app.post('/api/mine', async (req, res) => {
 
 	p2pServer.syncChains();
 
-	// await axios.post('http://localhost:5000/api/update/publicKey', {
-	// 	userId: req.body.userId,
-	// 	publicKey: block.publicKey
-	// })
-	// 	.then((el) => console.log("success"))
-	// 	.catch((e) => console.log(e));
+	await axios.post('http://localhost:5000/api/update/publicKey', {
+		userId: req.body.userId,
+		publicKey: block.referenceNo
+	})
+		.then((el) => console.log("success"))
+		.catch((e) => console.log(e));
 
 	res.redirect('/api/blocks');
 });

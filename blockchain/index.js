@@ -46,7 +46,7 @@ class Blockchain {
         const block = Block.mineBlock(lastBlock, data, authId);
         this.chain.push(block);
 
-        ChainUtil.backupBlockchain(this.chain);        
+        //ChainUtil.backupBlockchain(this.chain);        
 
         return block;
     }
@@ -57,7 +57,7 @@ class Blockchain {
         const block = Block.mineBlock(lastBlock, data, authId);
         this.chain.push(block);
 
-        ChainUtil.backupBlockchain(this.chain);        
+        //ChainUtil.backupBlockchain(this.chain);        
 
         return block;
     }
