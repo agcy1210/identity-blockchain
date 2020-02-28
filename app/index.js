@@ -41,6 +41,10 @@ app.get('/api/blocks', (req, res) => {
 	res.json(bc.chain);
 });
 
+app.get('/api/basic/blocks', (req, res) => {
+	res.json(bc.getBlocks());
+});
+
 app.get('/api/block/:referenceNo', (req, res) => {
 	const userBlock = bc.chain.filter((block) => {
 		return block.referenceNo === req.params.referenceNo;
@@ -76,18 +80,18 @@ app.post('/api/mine', async (req, res) => {
 
 	p2pServer.syncChains();
 
-	// await axios.post('http://localhost:5000/api/update/publicKey', {
-	// 	userId: req.body.userId,
-	// 	publicKey: block.publicKey
-	// })
-	// 	.then((el) => console.log("success"))
-	// 	.catch((e) => console.log(e));
+	await axios.post('http://localhost:5000/api/update/publicKey', {
+		userId: req.body.userId,
+		publicKey: block.referenceNo
+	})
+		.then((el) => console.log("success"))
+		.catch((e) => console.log(e));
 
 	res.redirect('/api/blocks');
 });
 
 
-app.post('/api/update', async (req,res) => {
+app.post('/api/update', async (req, res) => {
 	const block = bc.update(req.body.update, req.body.authId, req.body.referenceNo);
 
 	p2pServer.syncChains();
@@ -101,8 +105,6 @@ app.post('/api/update', async (req,res) => {
 	// 	.catch((e) => console.log(e));
 
 	res.json({ message: block });
-
-
 });
 
 app.post('/api/verify', (req, res) => {
@@ -113,8 +115,6 @@ app.post('/api/peers/add', (req, res) => {
 	const message = p2pServer.addPeers(req.body.peers);
 	res.json({ message });
 });
-
-
 
 app.listen(HTTP_PORT, () => console.log(`Listening on port ${HTTP_PORT}`));
 

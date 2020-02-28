@@ -27,12 +27,12 @@ class Block {
 
     //used to initialize the chain. This will always be the first block of the chain
     static genesis() {
-        return new this('Genesis time', '----', 'fir57-h45h', [], 'x', 'sign','r1','a1');
+        return new this('Genesis time', '----', 'fir57-h45h', [], 'x', 'sign', 'r1', 'a1');
     }
 
     static mineBlock(lastBlock, data, authId) {
         let hash, timestamp;
-        
+
         const referenceNo = this.generateReferenceNo(10);
         const lastHash = lastBlock.hash;
         let keyPair = ChainUtil.genKeyPair();
@@ -80,16 +80,14 @@ class Block {
 
     static generateReferenceNo(keyLength) {
         var i, key = "", characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    
         var charactersLength = characters.length;
-    
+
         for (i = 0; i < keyLength; i++) {
             key += characters.substr(Math.floor((Math.random() * charactersLength) + 1), 1);
         }
-    
+
         return key;
     }
-
 }
 
 module.exports = Block;

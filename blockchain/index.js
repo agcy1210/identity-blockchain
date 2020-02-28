@@ -18,26 +18,26 @@ class Blockchain {
     //             "type":"Pan",
     //             "id":"4545"
     //         }
-        
+
     //     ]
     // }
     addBlock(data, authId) {
         var chain_ids = [];
-        console.log(authId);
-        for(var i=1;i<this.chain.length;i++){
+
+        for (var i = 1; i < this.chain.length; i++) {
             this.chain[i].data.forEach(el => {
                 chain_ids.push(el.id);
             });
         }
         var flag = 0;
-        for(var i=0;i<chain_ids.length;i++){
+        for (var i = 0; i < chain_ids.length; i++) {
             data.forEach(el => {
-                if(el.id == chain_ids[i]){
+                if (el.id == chain_ids[i]) {
                     flag = 1;
                 }
             });
         }
-        if(flag==1){
+        if (flag == 1) {
             return 'Block already exists';
         }
 
@@ -46,18 +46,19 @@ class Blockchain {
         const block = Block.mineBlock(lastBlock, data, authId);
         this.chain.push(block);
 
-        ChainUtil.backupBlockchain(this.chain);        
+        // ChainUtil.backupBlockchain(this.chain);
 
         return block;
     }
 
+    //called when updated block is to be added
     addBlockUpdate(data, authId) {
         // as chain is a list we can get the last block by index one less than current
         const lastBlock = this.chain[this.chain.length - 1];
         const block = Block.mineBlock(lastBlock, data, authId);
         this.chain.push(block);
 
-        ChainUtil.backupBlockchain(this.chain);        
+        // ChainUtil.backupBlockchain(this.chain);
 
         return block;
     }
@@ -74,7 +75,7 @@ class Blockchain {
 
             // verifies the lasthash and hash field of block. If the data is tempered then blockHash() will give new hash.
             // hence verification will be failed and we will know that something went wrong
-            
+
             if (block.lastHash !== lastBlock.hash || block.hash !== Block.blockHash(block)) {
                 return false;
             }
@@ -113,31 +114,39 @@ class Blockchain {
         const chain = this.chain;
         const type = data['type'];
 
-        let blocks = chain.filter(el => el.referenceNo==referenceNo);
-        if(blocks.length==0){
+        let blocks = chain.filter(el => el.referenceNo == referenceNo);
+        if (blocks.length == 0) {
             return 'Block not found';
         }
 
         const recentBlock = blocks[blocks.length - 1];
         const blockData = JSON.parse(JSON.stringify(recentBlock.data));
-        var idData = (blockData.filter(el => el.type==type))[0];
+        var idData = (blockData.filter(el => el.type == type))[0];
 
         //changed details of the id with the new 
         var newData = [{
             type: idData['type'],
             id: idData['id'],
-            ...data.dataUpdation 
+            ...data.dataUpdation
         }];
 
         //ids which are not changed are added as it is
         recentBlock.data.forEach(el => {
-            if(el.type !== type){
+            if (el.type !== type) {
                 newData.push(el);
             }
         });
 
         return this.addBlockUpdate(newData, authId);
     }
+
+    // {
+    //     "data":{
+    //         "referenceNo":"UBgcZgiAF",
+    //         "id":"232",
+    //         "type":"Aadhar"
+    //     }
+    // }
 
     verifyDetails(data) {
         let block = this.chain.filter(block => {
@@ -146,12 +155,27 @@ class Blockchain {
 
         let id = data.id;
 
-        if(block){
+        if (block) {
             return Block.verify(block.publicKey, data, block);
         } else {
             return "Block not found";
         }
     }
-}
 
+    //will return array of blocks with only details that is to be shown to outside world
+    getBlocks() {
+        var data = [];
+
+        for (var i = 0; i < this.chain.length; i++) {
+            this.chain[i].data.forEach(el => {
+                data.push({
+                    serial: i,
+                    type: el.type,
+                    name: el.name
+                });
+            });
+        }
+        return data;
+    }
+}
 module.exports = Blockchain;
