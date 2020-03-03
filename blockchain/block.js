@@ -2,7 +2,7 @@ const ChainUtil = require('../chain-util');
 const { DIFFICULTY, MINE_RATE } = require('../config');
 
 class Block {
-    constructor(timestamp, lastHash, hash, data, publicKey, signature, referenceNo, authId) {
+    constructor(timestamp, lastHash, hash, data, publicKey, signature, referenceNo, authId, imageUrl) {
         this.timestamp = timestamp;
         this.lastHash = lastHash;
         this.hash = hash;
@@ -11,6 +11,7 @@ class Block {
         this.signature = signature;
         this.referenceNo = referenceNo;
         this.authId = authId;
+        this.imageUrl = imageUrl;
     }
 
     toString() {
@@ -22,15 +23,16 @@ class Block {
             publicKey  : ${this.publicKey.toString()}
             signature  : ${this.signature}
             referenceNo: ${this.referenceNo}
-            authId     : ${this.authId}`;
+            authId     : ${this.authId}
+            imageUrl   : ${this.imageUrl}`;
     }
 
     //used to initialize the chain. This will always be the first block of the chain
     static genesis() {
-        return new this('Genesis time', '----', 'fir57-h45h', [], 'x', 'sign', 'r1', 'a1');
+        return new this('Genesis time', '----', 'fir57-h45h', [], 'x', 'sign', 'r1', 'a1','imageUrl');
     }
 
-    static mineBlock(lastBlock, data, authId) {
+    static mineBlock(lastBlock, data, authId, imageUrl) {
         let hash, timestamp;
 
         const referenceNo = this.generateReferenceNo(10);
@@ -45,7 +47,7 @@ class Block {
         hash = Block.hash(lastHash, data, publicKey);
         let signature = keyPair.sign(hash);
 
-        return new this(timestamp, lastHash, hash, data, publicKey, signature, referenceNo, authId);
+        return new this(timestamp, lastHash, hash, data, publicKey, signature, referenceNo, authId, imageUrl);
     }
 
     //generates the hash using the SHA-256 algorithm

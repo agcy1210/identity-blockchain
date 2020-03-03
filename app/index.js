@@ -49,10 +49,13 @@ app.get('/api/block/:referenceNo', (req, res) => {
 	const userBlock = bc.chain.filter((block) => {
 		return block.referenceNo === req.params.referenceNo;
 	})[0];
+	console.log(userBlock.data);
 
 	res.json({
 		data: userBlock.data
 	});
+
+	
 });
 
 app.post('/api/block/basic/:referenceNo', (req, res) => {
@@ -65,7 +68,8 @@ app.post('/api/block/basic/:referenceNo', (req, res) => {
 	var response_data = {
 		name: newData['name'],
 		phone: newData['phone'],
-		email: newData['email']
+		email: newData['email'],
+		imageUrl: userBlock.imageUrl
 	};
 
 	res.json({
@@ -75,21 +79,20 @@ app.post('/api/block/basic/:referenceNo', (req, res) => {
 
 //used to add a new block in the chain
 app.post('/api/mine', async (req, res) => {
-	const block = bc.addBlock(req.body.data, req.body.authId);
+	const block = bc.addBlock(req.body.data, req.body.authId, req.body.imageUrl);
 	console.log(`New block added: ${block.toString()}`);
 
 	p2pServer.syncChains();
 
 	await axios.post('http://localhost:5000/api/update/publicKey', {
 		userId: req.body.userId,
-		publicKey: block.referenceNo
+		publicKey: block.referenceNo,
 	})
 		.then((el) => console.log("success"))
 		.catch((e) => console.log(e));
 
 	res.redirect('/api/blocks');
 });
-
 
 app.post('/api/update', async (req, res) => {
 	const block = bc.update(req.body.update, req.body.authId, req.body.referenceNo);

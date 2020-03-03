@@ -21,7 +21,7 @@ class Blockchain {
 
     //     ]
     // }
-    addBlock(data, authId) {
+    addBlock(data, authId, imageUrl) {
         var chain_ids = [];
 
         for (var i = 1; i < this.chain.length; i++) {
@@ -43,7 +43,7 @@ class Blockchain {
 
         // as chain is a list we can get the last block by index one less than current
         const lastBlock = this.chain[this.chain.length - 1];
-        const block = Block.mineBlock(lastBlock, data, authId);
+        const block = Block.mineBlock(lastBlock, data, authId, imageUrl);
         this.chain.push(block);
 
         // ChainUtil.backupBlockchain(this.chain);
